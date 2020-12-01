@@ -14,7 +14,7 @@ app.use(express.static('public'));
 
 
 
-
+// Routes
 app.get('/notes', function (req, res) {
     res.sendFile(path.join(__dirname, '/public/notes.html'));
 });
@@ -37,7 +37,7 @@ app.post('/api/notes', function (req, res) {
 app.delete('/api/notes/:id', function (req, res) {
     console.log('did it work?')
     deleteNotes(req);
-    
+
 })
 
 
@@ -66,9 +66,7 @@ function deleteNotes(req) {
         const notes = JSON.parse(data)
         const newNotes = notes.filter((item) => item.id != req.params.id);
         console.log(newNotes);
-        fs.writeFile(path.join(__dirname, '/db/db.json'), JSON.stringify(newNotes),function(){});
-        // const looper = (arr, cb) => arr.map(item => cb(item));
-        
+        fs.writeFile(path.join(__dirname, '/db/db.json'), JSON.stringify(newNotes), function () { });
     })
 }
 
