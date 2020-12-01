@@ -31,13 +31,14 @@ app.get('*', function (req, res) {
 
 app.post('/api/notes', function (req, res) {
     const note = { ...req.body, id: uuid() };
-    res.json(postNotes(note));
+    postNotes(note, function (err, data) {
+        res.json(data);
+    });
 });
 
 app.delete('/api/notes/:id', function (req, res) {
-    console.log('did it work?')
     deleteNotes(req);
-
+    res.sendFile(path.join(__dirname, '/public/notes.html'));
 })
 
 
@@ -49,13 +50,14 @@ function getNotes(cb) {
     })
 };
 
-function postNotes(note) {
+function postNotes(note, cb) {
     fs.readFile(path.join(__dirname, '/db/db.json'), 'utf8', function (err, data) {
         if (err) throw err;
         const notes = JSON.parse(data)
         notes.push(note);
-        fs.writeFile(path.join(__dirname, '/db/db.json'), JSON.stringify(notes), () => {
-            notes;
+        fs.writeFile(path.join(__dirname, '/db/db.json'), JSON.stringify(notes), function (err, data) {
+            if (err) throw err;
+            cb(null, notes);
         })
     })
 };
@@ -65,7 +67,6 @@ function deleteNotes(req) {
         if (err) throw err;
         const notes = JSON.parse(data)
         const newNotes = notes.filter((item) => item.id != req.params.id);
-        console.log(newNotes);
         fs.writeFile(path.join(__dirname, '/db/db.json'), JSON.stringify(newNotes), function () { });
     })
 }
